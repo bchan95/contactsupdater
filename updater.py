@@ -30,10 +30,86 @@ headers = {'Authorization': "Bearer "+ sqspaceapiKey,
            'User-agent': str(ua.chrome)}
 print(lastupdated)
 if lastupdated == "":
-    order = r.get("https://api.squarespace.com/1.0/commerce/orders?modifiedAfter=2014-04-10T12:00:00Z&modifiedBefore=2018-04-09T14:07:00Z", headers=headers)
+    order = r.get("https://api.squarespace.com/1.0/commerce/orders?modifiedAfter=2017-12-30T12:00:00Z&modifiedBefore=2018-04-10T14:07:00Z", headers=headers)
 
 else:
     order = r.get("https://api.squarespace.com/1.0/commerce/orders?modifiedAfter="+lastupdated+"Z&modifiedBefore="+datetime.datetime.now().replace(microsecond=0).isoformat()+"Z", headers=headers)
+
+
+
+data = order.text
+jsonData = json.loads(data)
+
+for item in jsonData['result']:
+    if isinstance(item, dict):
+        name = item['billingAddress']['firstName']
+        lastName = item['billingAddress']['lastName']
+        email = item['customerEmail']
+        phone = item['billingAddress']['phone']
+        product = item['lineItems'][0]['productName']
+        orderNumber = item['orderNumber']
+        if ('Veterinary' not in product) & ('Animal' not in product):
+            product = 'Med'
+
+        else:
+            product = 'Vet'
+
+        user_options = {
+            "fs_contact": True,
+            'First name': name,
+            'Last name': lastName,
+            'Email': email,
+            'Order Number': orderNumber,
+            'Primary Phone': phone,
+            'Med or Vet': product
+            }
+        freshsales.identify(email, user_options)
+medKeyFile = open("secrets/medKey", "r")
+medKey = medKeyFile.read()
+medKeyFile.close()
+
+headers = {'Authorization': "Bearer "+ medKey,
+           'User-agent': str(ua.chrome)}
+
+if lastupdated == "":
+    order = r.get("https://api.squarespace.com/1.0/commerce/orders?modifiedAfter=2017-12-30T12:00:00Z&modifiedBefore=2018-04-10T14:07:00Z", headers=headers)
+
+else:
+    order = r.get("https://api.squarespace.com/1.0/commerce/orders?modifiedAfter="+lastupdated+"Z&modifiedBefore="+datetime.datetime.now().replace(microsecond=0).isoformat()+"Z", headers=headers)
+
+
+
+data = order.text
+jsonData = json.loads(data)
+
+for item in jsonData['result']:
+    if isinstance(item, dict):
+        print(item['createdOn'])
+        name = item['billingAddress']['firstName']
+        print(name)
+        lastName = item['billingAddress']['lastName']
+        email = item['customerEmail']
+        phone = item['billingAddress']['phone']
+        product = item['lineItems'][0]['productName']
+        orderNumber = item['orderNumber']
+        purchaseDate = item['createdOn']
+        if ('Veterinary' not in product) & ('Animal' not in product):
+            product = 'Med'
+
+        else:
+            product = 'Vet'
+
+        user_options = {
+            "fs_contact": True,
+            'First name': name,
+            'Last name': lastName,
+            'Email': email,
+            'Order Number': orderNumber,
+            'Primary Phone': phone,
+            'Med or Vet': product,
+            'Puchase Date': purchaseDate
+            }
+        freshsales.identify(email, user_options)
 
 
 date = datetime.datetime.now().replace(microsecond=0)
@@ -43,26 +119,6 @@ lastupdatedfile = open('lastupdated', 'w')
 lastupdatedfile.write(lastupdated)
 lastupdatedfile.close()
 
-data = order.text
-jsonData = json.loads(data)
-
-for item in jsonData['result']:
-    if isinstance(item, dict):
-        name = item['billingAddress']['firstName']
-        lastName = item['billingAddress']['lastName']
-        print(lastName)
-        email = item['customerEmail']
-        phone = item['billingAddress']['phone']
-        product = item['lineItems'][0]['productName']
-        user_options = {
-            "fs_contact": True,
-            'First name': name,
-            'Last name': lastName,
-            'email': email,
-            'Primary Phone': phone,
-            'Med or Vet': product
-            }
-        freshsales.identify(email, user_options)
 # user_options = {
 #     "fs_contact": True,
 #     'First name': 'Testie',
