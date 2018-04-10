@@ -1,7 +1,7 @@
 #################################################
 # Author: Brendan Chan
-#Python script that pulls most recent Squarespace Orders by date and adds them as contacts to Freshsales
-
+# Python script that pulls most recent Squarespace Orders by date and adds them as contacts to Freshsales
+#################################################
 
 
 from freshsales import FreshsalesAnalytics
