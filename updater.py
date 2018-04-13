@@ -12,15 +12,15 @@ import json
 
 ua = UserAgent()
 
-freshapi_file = open("secrets/freshapiKey", "r")
+freshapi_file = open("C:\\Users\Brian\PycharmProjects\contactsupdater\secrets/freshapiKey", "r")
 freshapiKey = freshapi_file.read()
 freshapi_file.close()
 
-sqspaceapiKeyFile = open("secrets/sqspaceapiKey", "r")
+sqspaceapiKeyFile = open("C:\\Users\Brian\PycharmProjects\contactsupdater\secrets/sqspaceapiKey", "r")
 sqspaceapiKey = sqspaceapiKeyFile.read()
 sqspaceapiKeyFile.close()
 
-lastupdatedfile = open("lastupdated", "r")
+lastupdatedfile = open("C:\\Users\Brian\PycharmProjects\contactsupdater\lastupdated", "r")
 lastupdated = lastupdatedfile.read()
 lastupdatedfile.close()
 
@@ -46,9 +46,10 @@ for item in jsonData['result']:
         lastName = item['billingAddress']['lastName']
         email = item['customerEmail']
         phone = item['billingAddress']['phone']
-        product = item['lineItems'][0]['productName']
+        purchased = item['lineItems'][0]['productName']
         orderNumber = item['orderNumber']
-        if ('Veterinary' not in product) & ('Animal' not in product):
+        purchaseDate = item['createdOn']
+        if ('Veterinary' not in purchased) and ('Animal' not in purchased):
             product = 'Med'
 
         else:
@@ -59,12 +60,14 @@ for item in jsonData['result']:
             'First name': name,
             'Last name': lastName,
             'Email': email,
+            'What was purchased': purchased,
             'Order Number': orderNumber,
             'Primary Phone': phone,
-            'Med or Vet': product
-            }
+            'Med or Vet': product,
+            'Puchase Date': purchaseDate
+        }
         freshsales.identify(email, user_options)
-medKeyFile = open("secrets/medKey", "r")
+medKeyFile = open("C:\\Users\Brian\PycharmProjects\contactsupdater\secrets/medKey", "r")
 medKey = medKeyFile.read()
 medKeyFile.close()
 
@@ -84,16 +87,14 @@ jsonData = json.loads(data)
 
 for item in jsonData['result']:
     if isinstance(item, dict):
-        print(item['createdOn'])
         name = item['billingAddress']['firstName']
-        print(name)
         lastName = item['billingAddress']['lastName']
         email = item['customerEmail']
         phone = item['billingAddress']['phone']
-        product = item['lineItems'][0]['productName']
+        purchased = item['lineItems'][0]['productName']
         orderNumber = item['orderNumber']
         purchaseDate = item['createdOn']
-        if ('Veterinary' not in product) & ('Animal' not in product):
+        if ('Veterinary' not in purchased) and ('Animal' not in purchased):
             product = 'Med'
 
         else:
@@ -104,6 +105,7 @@ for item in jsonData['result']:
             'First name': name,
             'Last name': lastName,
             'Email': email,
+            'What was purchased': purchased,
             'Order Number': orderNumber,
             'Primary Phone': phone,
             'Med or Vet': product,
